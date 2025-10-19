@@ -9,17 +9,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "user_bio")
-public class UserBioEntity {
+@Table(name = "results")
+public class ResultEntity {
 
     @Id
-    private Long userId;
+    @Column(name = "uuid", nullable = false, unique = true)
+    private UUID uuid;
 
-    @Column(length = 2048)
-    private String bio;
+    @Column(name = "jsonResult", length = 65536)
+    private String jsonResult;
 }
