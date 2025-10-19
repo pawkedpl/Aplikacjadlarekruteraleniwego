@@ -1,1 +1,1 @@
-# Go game server
+# Proper HR App Backend
