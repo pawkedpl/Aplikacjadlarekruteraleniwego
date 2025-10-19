@@ -1,5 +1,6 @@
 package org.gogame.server.controllers;
 
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.gogame.server.domain.entities.ResultEntity;
 import org.gogame.server.domain.entities.dto.GetFormResp;
@@ -24,6 +25,7 @@ public class FormController {
     private final FormService formService;
     private final QuestionRepository questionRepository;
     private final ResultRepository resultRepository;
+    private final Gson gson = new Gson();
 
     @GetMapping("/getForm")
     public ResponseEntity<GetFormResp> getForm() {
@@ -74,21 +76,7 @@ public class FormController {
         if (resultEntity.getJsonResult() == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-
-        // mock - do wywalenia
-        {
-            var response = ValidateFormResp.builder()
-                .questionVerdicts(List.of(
-                    ValidateFormResp.QuestionVerdict
-                        .builder()
-                        .id(110L)
-                        .score(4)
-                        .explanation("The answer meets all the criteria.")
-                        .build()
-                ))
-                .build();
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
+        var validatonResp = gson.fromJson(resultEntity.getJsonResult(), ValidateFormResp.class);
+        return new ResponseEntity<>(validatonResp, HttpStatus.OK);
     }
 }

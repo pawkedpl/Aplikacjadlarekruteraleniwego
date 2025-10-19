@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class ValidateFormResp {
 
-    // TODO można to dostować
+    // TODO można to dostosować
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
