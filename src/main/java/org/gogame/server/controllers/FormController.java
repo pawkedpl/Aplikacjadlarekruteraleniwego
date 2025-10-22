@@ -3,10 +3,10 @@ package org.gogame.server.controllers;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.gogame.server.domain.entities.ResultEntity;
-import org.gogame.server.domain.entities.dto.GetFormResp;
-import org.gogame.server.domain.entities.dto.SubmitFormReq;
-import org.gogame.server.domain.entities.dto.SubmitFormResp;
-import org.gogame.server.domain.entities.dto.ValidateFormResp;
+import org.gogame.server.domain.entities.dto.GetFormResponse;
+import org.gogame.server.domain.entities.dto.SubmitFormRequest;
+import org.gogame.server.domain.entities.dto.SubmitFormResponse;
+import org.gogame.server.domain.entities.dto.ValidateFormResponse;
 import org.gogame.server.repositories.QuestionRepository;
 import org.gogame.server.repositories.ResultRepository;
 import org.gogame.server.service.FormService;
@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,7 +27,7 @@ public class FormController {
     private final Gson gson = new Gson();
 
     @GetMapping("/getForm")
-    public ResponseEntity<GetFormResp> getForm() {
+    public ResponseEntity<GetFormResponse> getForm() {
         var questions = questionRepository.findAll();
 
         if (questions.isEmpty()) {
@@ -36,14 +35,14 @@ public class FormController {
         }
 
         return new ResponseEntity<>(
-            GetFormResp.builder()
+            GetFormResponse.builder()
                 .questions(questions)
                 .build(),
             HttpStatus.OK);
     }
 
     @PutMapping("/submitForm")
-    public ResponseEntity<SubmitFormResp> submitForm(@RequestBody SubmitFormReq submitFormReq) {
+    public ResponseEntity<SubmitFormResponse> submitForm(@RequestBody SubmitFormRequest submitFormRequest) {
         var newUuid = UUID.randomUUID();
         resultRepository.save(ResultEntity.builder()
             .uuid(newUuid)
@@ -51,12 +50,12 @@ public class FormController {
             .build());
 
         try {
-            formService.validateForm(newUuid, submitFormReq);
+            formService.validateForm(newUuid, submitFormRequest);
         } catch (InterruptedException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        var response = SubmitFormResp.builder()
+        var response = SubmitFormResponse.builder()
             .uuid(newUuid)
             .build();
 
@@ -64,7 +63,7 @@ public class FormController {
     }
 
     @GetMapping("/checkResults/{uuid}")
-    public ResponseEntity<ValidateFormResp> checkResults(@PathVariable UUID uuid) {
+    public ResponseEntity<ValidateFormResponse> checkResults(@PathVariable UUID uuid) {
         var resultEntityOpt = resultRepository.findByUuid(uuid);
 
         if (resultEntityOpt.isEmpty()) {
@@ -76,7 +75,7 @@ public class FormController {
         if (resultEntity.getJsonResult() == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        var validatonResp = gson.fromJson(resultEntity.getJsonResult(), ValidateFormResp.class);
+        var validatonResp = gson.fromJson(resultEntity.getJsonResult(), ValidateFormResponse.class);
         return new ResponseEntity<>(validatonResp, HttpStatus.OK);
     }
 }

@@ -11,7 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SubmitFormResp {
+public class SubmitFormResponse {
 
     private UUID uuid;
 }

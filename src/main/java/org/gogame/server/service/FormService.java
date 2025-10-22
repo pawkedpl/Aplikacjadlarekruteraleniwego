@@ -3,8 +3,8 @@ package org.gogame.server.service;
 import com.google.gson.Gson;
 import org.gogame.server.config.ApiConfig;
 import org.gogame.server.domain.entities.ResultEntity;
-import org.gogame.server.domain.entities.dto.SubmitFormReq;
-import org.gogame.server.domain.entities.dto.ValidateFormResp;
+import org.gogame.server.domain.entities.dto.SubmitFormRequest;
+import org.gogame.server.domain.entities.dto.ValidateFormResponse;
 import org.gogame.server.repositories.ResultRepository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -26,16 +26,16 @@ public class FormService {
     }
 
     @Async
-    public void validateForm(UUID uuid, SubmitFormReq submitFormReq) throws InterruptedException {
+    public void validateForm(UUID uuid, SubmitFormRequest submitFormRequest) throws InterruptedException {
 
         // todo @pawked zaimplementuj interakcję z czatem tutaj
         {
             apiConfig.getApiKey();
             Thread.sleep(5000);
 
-            var response = ValidateFormResp.builder()
+            var response = ValidateFormResponse.builder()
                 .questionVerdicts(List.of(
-                    ValidateFormResp.QuestionVerdict
+                    ValidateFormResponse.QuestionVerdict
                         .builder()
                         .id(110L)
                         .score(4)

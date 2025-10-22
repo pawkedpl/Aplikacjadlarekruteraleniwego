@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ValidateFormResp {
+public class ValidateFormResponse {
 
     // TODO można to dostosować
     @Data

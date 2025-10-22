@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GetFormResp {
+public class GetFormResponse {
 
     private List<QuestionEntity> questions;
 

@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SubmitFormReq {
+public class SubmitFormRequest {
 
     @Data
     @AllArgsConstructor
