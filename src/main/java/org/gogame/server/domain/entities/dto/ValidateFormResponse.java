@@ -14,15 +14,8 @@ import java.util.List;
 public class ValidateFormResponse {
 
     // TODO można to dostosować
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
     @Builder
-    public static class QuestionVerdict {
-        private Long id;
-        private Integer score;
-        private String explanation;
-    }
+    public record QuestionVerdict(Long id, Integer score, String explanation) {}
 
     private List<QuestionVerdict> questionVerdicts;
 }

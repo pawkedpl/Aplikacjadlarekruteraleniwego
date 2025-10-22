@@ -11,8 +11,14 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
-# https://openrouter.ai/docs/quickstart - Using the OpenRouter API directly
-# Mam na koncie $2, więcej nie korzystam, można używać
-openrouter:
-  api-key: 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
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 25MB
+  ai:
+    openai:
+      audio:
+        transcription:
+          options:
+            model: whisper-1
+            language: pl

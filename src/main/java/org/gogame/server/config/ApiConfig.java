@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ConfigurationProperties(prefix = "openrouter")
+@ConfigurationProperties(prefix = "app.llm")
 public class ApiConfig {
     private String apiKey;
 }

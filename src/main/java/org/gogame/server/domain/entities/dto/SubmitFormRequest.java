@@ -13,15 +13,8 @@ import java.util.List;
 @Builder
 public class SubmitFormRequest {
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
     @Builder
-    public static class Response {
-        private String id;
-        private String question;
-        private String answer;
-    }
+    public record Response(String id, String question, String answer) {}
 
     private List<Response> responses;
 }

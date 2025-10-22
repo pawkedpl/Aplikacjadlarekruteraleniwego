@@ -30,7 +30,7 @@ public class FormService {
 
         // todo @pawked zaimplementuj interakcję z czatem tutaj
         {
-            apiConfig.getApiKey();
+            System.out.println(apiConfig.getApiKey());
             Thread.sleep(5000);
 
             var response = ValidateFormResponse.builder()

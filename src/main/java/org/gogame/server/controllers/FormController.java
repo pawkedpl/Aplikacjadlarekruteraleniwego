@@ -22,8 +22,10 @@ import java.util.UUID;
 public class FormController {
 
     private final FormService formService;
+
     private final QuestionRepository questionRepository;
     private final ResultRepository resultRepository;
+
     private final Gson gson = new Gson();
 
     @GetMapping("/getForm")
