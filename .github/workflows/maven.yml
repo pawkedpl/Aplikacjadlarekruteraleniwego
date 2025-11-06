@@ -29,8 +29,6 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
-      env:
-        SPRING_AUTH_JWT_ENCRYPT_KEY: ${{ vars.SPRING_AUTH_JWT_ENCRYPT_KEY }}
-      run: mvn -B package --file pom.xml
+    - name: build
+      run: mvn -B package --file backend/pom.xml
       
