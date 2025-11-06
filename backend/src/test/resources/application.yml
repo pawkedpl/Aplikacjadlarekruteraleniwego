@@ -1,3 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 25MB
+  ai:
+    openai:
+      audio:
+        transcription:
+          options:
+            model: whisper-1
+            language: pl
+      api-key: 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
 openrouter:
   api-key: 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    # ← Twój OpenAI Project Key
   base-url: https://api.openai.com
