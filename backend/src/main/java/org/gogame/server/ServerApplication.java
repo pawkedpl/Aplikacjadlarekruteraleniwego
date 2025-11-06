@@ -30,16 +30,30 @@ public class ServerApplication {
             InputStream is = new ClassPathResource("questions.json").getInputStream();
             JsonNode root = mapper.readTree(is).path("questions");
 
+            // wyczyść stare rekordy, żeby nie zostały puste
+            questionRepository.deleteAll();
+
             List<QuestionEntity> questions = new ArrayList<>();
             if (root.isArray()) {
                 for (JsonNode qNode : root) {
-                    questions.add(QuestionEntity.builder()
-                            .question(qNode.asText())
-                            .build());
+                    String text;
+                    if (qNode.isTextual()) {
+                        // gdybyś miał prostą listę stringów
+                        text = qNode.asText();
+                    } else {
+                        // obecny format: obiekt z polem "prompt"
+                        text = qNode.path("prompt").asText();
+                    }
+                    if (text != null && !text.isBlank()) {
+                        questions.add(QuestionEntity.builder()
+                                .question(text)
+                                .build());
+                    }
                 }
             }
 
             questionRepository.saveAll(questions);
         };
     }
+
 }

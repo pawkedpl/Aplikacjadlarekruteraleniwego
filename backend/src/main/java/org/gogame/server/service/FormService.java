@@ -1,56 +1,84 @@
 package org.gogame.server.service;
 
 import com.google.gson.Gson;
-import org.gogame.server.config.ApiConfig;
+import lombok.RequiredArgsConstructor;
 import org.gogame.server.domain.entities.ResultEntity;
-import org.gogame.server.domain.entities.dto.SubmitFormRequest;
-import org.gogame.server.domain.entities.dto.ValidateFormResponse;
+import org.gogame.server.domain.entities.dto.SubmitFormReq;
+import org.gogame.server.domain.entities.dto.ValidateFormResp;
 import org.gogame.server.repositories.ResultRepository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;   // <— brakujący import
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class FormService {
 
-    private final ApiConfig apiConfig;
     private final ResultRepository resultRepository;
-    private final Gson gson;
-
-    public FormService(ApiConfig apiConfig, ResultRepository resultRepository) {
-        this.apiConfig = apiConfig;
-        this.resultRepository = resultRepository;
-        this.gson = new Gson();
-    }
+    private final OpenRouterClient ai;           // <— wstrzykujemy klienta AI
+    private final Gson gson = new Gson();
 
     @Async
-    public void validateForm(UUID uuid, SubmitFormRequest submitFormRequest) throws InterruptedException {
+    public void validateForm(UUID uuid, SubmitFormReq submitFormReq) {
+        try {
+            List<ValidateFormResp.QuestionVerdict> verdicts = new ArrayList<>();
 
-        // todo @pawked zaimplementuj interakcję z czatem tutaj
-        {
-            System.out.println(apiConfig.getApiKey());
-            Thread.sleep(5000);
+            if (submitFormReq.getResponses() != null) {
+                for (SubmitFormReq.Response r : submitFormReq.getResponses()) {
+                    var question = r.getQuestion();
+                    var answer   = r.getAnswer();
 
-            var response = ValidateFormResponse.builder()
-                .questionVerdicts(List.of(
-                    ValidateFormResponse.QuestionVerdict
-                        .builder()
-                        .id(110L)
-                        .score(4)
-                        .explanation("The answer meets all the criteria.")
-                        .build()
-                ))
-                .build();
 
-            // workaround żeby wepchnąć ocenę do tablicy SQL
-            resultRepository.save(
-                ResultEntity.builder()
+                    var out = ai.grade(question, answer).block();
+
+
+
+                    float score = 0f;
+                    String feedback = "No feedback";
+
+                    if (out != null) {
+
+                        score = out.score();
+                        feedback = out.feedback();
+
+                    }
+
+                    Long id = null;
+                    try { id = Long.valueOf(r.getId()); } catch (Exception ignore) {}
+
+                    verdicts.add(ValidateFormResp.QuestionVerdict.builder()
+                            .id(id)
+                            .score(Math.round(score))
+                            .explanation(feedback)
+                            .build());
+                }
+            }
+
+            var response = ValidateFormResp.builder()
+                    .questionVerdicts(verdicts)
+                    .build();
+
+            resultRepository.save(ResultEntity.builder()
                     .uuid(uuid)
                     .jsonResult(gson.toJson(response))
-                .build());
+                    .build());
+
+        } catch (Exception e) {
+            var error = ValidateFormResp.builder().questionVerdicts(List.of(
+                    ValidateFormResp.QuestionVerdict.builder()
+                            .id(null)
+                            .score(0)
+                            .explanation("AI error: " + e.getMessage())
+                            .build()
+            )).build();
+
+            resultRepository.save(ResultEntity.builder()
+                    .uuid(uuid)
+                    .jsonResult(gson.toJson(error))
+                    .build());
         }
     }
-
 }
